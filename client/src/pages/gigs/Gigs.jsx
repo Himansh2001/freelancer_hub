@@ -1,19 +1,41 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./Gigs.scss";
 import GigCard from "../../components/gigCard/GigCard";
 import { gigs } from "../../data";
+import { useQuery } from "@tanstack/react-query";
+import newRequest from "../../utils/newRequest";
+import { useLocation } from "react-router-dom";
 const Gigs = () => {
-       const [sort,setSort]=useState("sales")  ;
+      const [sort,setSort]=useState("sales")  ;
       const  [open,setOpen] =useState(false) ;
+      const minRef=useRef() ;
+      const maxRef=useRef() ;
 
+     const {search} = useLocation() ;
+const { isLoading, error, data, refetch } = useQuery({
+  queryKey: ["gigs"],
+  queryFn: () =>
+     newRequest.get(`/gigs${search}&min=${minRef.current.value}&max=${maxRef.current.value}&sort=${sort}`).then(res=>{
+       return res.data ;
+     }),
+});
+
+
+    console.log(data) ;
      const reSort = (type)=>{
         setSort(type) ;
         setOpen(false) ;
       }
+      useEffect(()=>{
+        refetch() ;
+      },[sort]) ;
+      const apply=()=>{
+          refetch() ;
+      }
   return (
     <div className="gigs">
       <div className="container">
-        <span className="breadcrumbs">GRAPHICS & DESIGN  </span>
+        <span className="breadcrumbs">GRAPHICS & DESIGN </span>
         <h1>AI Artist</h1>
         <p>
           Explore the boundaries of art and technology with Fiverr's AI artists
@@ -21,9 +43,9 @@ const Gigs = () => {
         <div className="menu">
           <div className="left">
             <span>Budget</span>
-            <input type="text" placeholder="min" />
-            <input type="text" placeholder="max" />
-            <button>Apply</button>
+            <input ref={minRef} type="text" placeholder="min" />
+            <input ref={maxRef} type="text" placeholder="max" />
+            <button onClick={apply}>Apply</button>
           </div>
           <div className="right">
             <span className="sortBy">SortBy</span>
@@ -47,17 +69,11 @@ const Gigs = () => {
           </div>
         </div>
         <div className="cards">
-          <GigCard item={gigs[0]} />
-          <GigCard item={gigs[1]} />
-          <GigCard item={gigs[2]} />
-          <GigCard item={gigs[3]} />
-          <GigCard item={gigs[4]} />
-          <GigCard item={gigs[5]} />
-          <GigCard item={gigs[6]} />
-          <GigCard item={gigs[7]} />
-          <GigCard item={gigs[0]} />
-          <GigCard item={gigs[1]} />
-          <GigCard item={gigs[2]} />
+          {isLoading
+            ? "loading"
+            : error
+            ? "something went wrong!"
+            : data.map((gig) => <GigCard key={gig._id} item={gig} />)}
         </div>
       </div>
     </div>

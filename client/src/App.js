@@ -16,17 +16,27 @@ import Login from "./pages/login/Login";
 import  "./app.scss"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Register from "./pages/register/Register";
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
 
 
 function App() {
   const Layout = ()=>{
     return (
       <div className="app">
-      <Navbar/>
-      <Outlet/>
-      <Footer/>
+        <QueryClientProvider client={queryClient}>
+          <Navbar />
+          <Outlet />
+          <Footer />
+        </QueryClientProvider>
       </div>
-    )
+    );
   }
   const router = createBrowserRouter([
     {
