@@ -14,7 +14,6 @@ import Messages from "./pages/messages/Messages";
 import Message from "./pages/message/Message";
 import Login from "./pages/login/Login";
 import  "./app.scss"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Register from "./pages/register/Register";
 import {
   QueryClient,
